@@ -8,7 +8,7 @@ set -e
 ### 		IMPORTANT: within group_file.tsv all genome names must have a ".faa" ending!
 ###		3. 	Usage: bash Prokka_ORF_finding.sh "Projekt" "input_folder"
 ###			"input_folder" must contain the hard path! (not relative!)	
-### 	4.	run script in same folder then accompanying perl scripts.
+### 	4.	run script in same folder then accompanying perl scripts (https://github.com/aleimba/bac-genomics-scripts).
 
 
 if [ $# -lt 2 ]; then
@@ -37,11 +37,11 @@ for file in "$input_folder"fasta_files/*.fna; do
 	cp "$input_folder"output_Prokka/"$name"/"$name".faa "$input_folder"output_Prokka/"$name"/origin_files/"$name"_origin.faa
 	mv "$input_folder"output_Prokka/"$name"/"$name".gff "$input_folder"output_Prokka/"$name"/origin_files/"$name"_origin.gff
 	
-	perl /mnt/WD2/matthias/own_Genostar_NCBI_NVI/Prokka/cds_extractor.pl -i "$input_folder"output_Prokka/"$name"/"$name".gbk -p
+	perl cds_extractor.pl -i "$input_folder"output_Prokka/"$name"/"$name".gbk -p
 	
 	cp "$input_folder"output_Prokka/"$name"/"$name".faa "$input_folder"output_Prokka/"$name".faa 
 	
-	perl /mnt/WD2/matthias/own_Genostar_NCBI_NVI/Prokka/bp_genbank2gff3.pl -r "$input_folder"output_Prokka/"$name"/"$name".gbk -o "$input_folder"output_Prokka/"$name"/
+	perl bp_genbank2gff3.pl -r "$input_folder"output_Prokka/"$name"/"$name".gbk -o "$input_folder"output_Prokka/"$name"/
 	
 	mv "$input_folder"output_Prokka/"$name"/"$name".gbk.gff  "$input_folder"output_Prokka/"$name"/"$name".gff
 	
@@ -55,7 +55,7 @@ done
 [ -d "$input_folder"Protein_ortho/ ] || mkdir "$input_folder"Protein_ortho/
 cd "$input_folder"Protein_ortho/
 
-/opt/proteinortho/proteinortho_v5.15/proteinortho5.pl -selfblast -graph -singles -synteny -verbose --keep -identity=70 -cov=70 -blastParameters='-use_sw_tback' -project="$project"_i70_c70 -clean -cpus=32 "$input_folder"output_Prokka/*/*.faa
+proteinortho5.pl -selfblast -graph -singles -synteny -verbose --keep -identity=70 -cov=70 -blastParameters='-use_sw_tback' -project="$project"_i70_c70 -clean -cpus=32 "$input_folder"output_Prokka/*/*.faa
 
 cp "$project"*.proteinortho ../
 
